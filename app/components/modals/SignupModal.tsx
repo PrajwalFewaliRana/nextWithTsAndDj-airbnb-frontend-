@@ -7,6 +7,7 @@ import CustomButton from "../forms/CustomButton";
 import useSignupModal from "@/app/hooks/useSignupModal";
 import apiService from "@/app/services/apiService";
 import { error } from "console";
+import { handleLogin } from "@/app/lib/actions";
 
 const SignupModal = () => {
   const signupModal = useSignupModal();
@@ -26,7 +27,7 @@ const SignupModal = () => {
     }
     const response = await apiService.post('/api/auth/register/',JSON.stringify(formdata) )
     if (response.access){
-      
+      handleLogin(response.user.pk,response.access,response.refresh)
       signupModal.close()
       router.push('/')
     }else{

@@ -1,17 +1,22 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import MenuLink from "./MenuLink";
 import useLoginModel from "@/app/hooks/useLoginModel";
 import useSignupModal from "@/app/hooks/useSignupModal";
+import LogoutButton from "../LogoutButton";
 
-const UserNav = () => {
+interface UserNavProps {
+  userId?: string | null;
+}
+
+const UserNav: React.FC<UserNavProps> = ({ userId }) => {
   const loginModal = useLoginModel();
   const signupModal = useSignupModal();
-  const [isOpen,setIsOpen]=useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="p-2 relative inline-block border rounded-full">
-      <button onClick={()=>setIsOpen(!isOpen)} className="flex items-center">
+      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center">
         <svg
           fill="none"
           viewBox="0 0 24 24"
@@ -39,11 +44,28 @@ const UserNav = () => {
           />
         </svg>
       </button>
-      {isOpen &&(
+      {isOpen && (
         <div className="w-55 absolute top-15 right-0 bg-white border rounded-xl shadow-md flex flex-col cursor-pointer">
-          <MenuLink label='Signup' onClick={()=>{setIsOpen(false);signupModal.open()}}/>
-          <MenuLink label='Login' onClick={()=>{setIsOpen(false); loginModal.open()}}/>
-
+          {userId ? (
+            <LogoutButton />
+          ) : (
+            <>
+              <MenuLink
+                label="Signup"
+                onClick={() => {
+                  setIsOpen(false);
+                  signupModal.open();
+                }}
+              />
+              <MenuLink
+                label="Login"
+                onClick={() => {
+                  setIsOpen(false);
+                  loginModal.open();
+                }}
+              />
+            </>
+          )}
         </div>
       )}
     </div>
