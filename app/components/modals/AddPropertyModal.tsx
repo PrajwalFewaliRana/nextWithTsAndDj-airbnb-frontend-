@@ -1,11 +1,16 @@
 "use client";
 import useAddPropertyModal from "@/app/hooks/useAddPropertyModal";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import Modal from "./Modal";
 import CustomButton from "../forms/CustomButton";
 import Categories from "../addProperty/Categories";
+import SelectCountry, { SelectCountryValue } from "../forms/SelectCountry";
+import Image from "next/image";
+import apiService from "@/app/services/apiService";
+import { useRouter } from "next/navigation";
 
 const AddPropertyModal = () => {
+  const router= useRouter()
   const addPropertyModal = useAddPropertyModal();
   const [currentStep, setCurrentStep] = useState(1);
   const [dataCategory, setDataCategory] = useState("");
@@ -15,9 +20,52 @@ const AddPropertyModal = () => {
   const [dataBedrooms, setDataBedrooms] = useState("");
   const [dataBathrooms, setDataBathrooms] = useState("");
   const [dataGuests, setDataGuests] = useState("");
+  const [dataCountry, setDataCountry] = useState<SelectCountryValue>();
+  const [dataImage, setDataImage] = useState<File | null>(null);
 
   const setCategory = (category: string) => {
     setDataCategory(category);
+  };
+
+  const setImage = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const tmpImage = event.target.files[0];
+      setDataImage(tmpImage);
+    }
+  };
+
+  const submitForm = async () => {
+    console.log("submitForm");
+
+    if (
+      dataCategory &&
+      dataTitle &&
+      dataDescription &&
+      dataPrice &&
+      dataCountry &&
+      dataImage
+    ) {
+      const formData = new FormData();
+      formData.append("category", dataCategory);
+      formData.append("title", dataTitle);
+      formData.append("description", dataDescription);
+      formData.append("price_per_night", dataPrice);
+      formData.append("bedrooms", dataBedrooms);
+      formData.append("bathrooms", dataBathrooms);
+      formData.append("guests", dataGuests);
+      formData.append("country", dataCountry.label);
+      formData.append("country_code", dataCountry.value);
+      formData.append("image", dataImage);
+      const response = await apiService.post('/api/properties/create/',formData)
+      if(response.success){
+        console.log('SUCCESS :-D');
+        router.push('/')
+        addPropertyModal.close();
+      }else{
+        console.log('Error');
+      }
+      
+    }
   };
 
   const content = (
@@ -116,6 +164,12 @@ const AddPropertyModal = () => {
       ) : currentStep == 4 ? (
         <>
           <h2 className="mb-6 text-2xl">Location</h2>
+          <div className="pt-3 pb-6 space-y-4">
+            <SelectCountry
+              value={dataCountry}
+              onChange={(value) => setDataCountry(value as SelectCountryValue)}
+            />
+          </div>
           <CustomButton
             label="Previous"
             className="mb-2 bg-black! hover:bg-gray-800!"
@@ -124,7 +178,34 @@ const AddPropertyModal = () => {
           <CustomButton label="Next" onClick={() => setCurrentStep(5)} />
         </>
       ) : (
-        <p>hello</p>
+        <>
+          <h2 className="mb-6 text-2xl">Image</h2>
+          <div className="pt-3 pb-6 space-y-4">
+            <div className="py-4 px-6 bg-gray-600 text-white rounded-xl">
+              <input type="file" accept="image/*" onChange={setImage} />
+            </div>
+            {dataImage && (
+              <div className="w-50 h-37.5 relative">
+                <Image
+                  fill
+                  alt="Uploaded image"
+                  src={URL.createObjectURL(dataImage)}
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              </div>
+            )}
+          </div>
+          <CustomButton
+            label="Previous"
+            className="mb-2 bg-black! hover:bg-gray-800!"
+            onClick={() => setCurrentStep(4)}
+          />
+          <CustomButton
+            label="Submit"
+            onClick={submitForm}
+            className="bg-green-600! hover:bg-green-500!"
+          />
+        </>
       )}
     </>
   );
