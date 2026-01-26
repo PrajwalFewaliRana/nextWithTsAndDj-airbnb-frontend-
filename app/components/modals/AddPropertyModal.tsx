@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 const AddPropertyModal = () => {
   const router= useRouter()
   const addPropertyModal = useAddPropertyModal();
+  const [errors,setErrors] = useState<string[]>([])
   const [currentStep, setCurrentStep] = useState(1);
   const [dataCategory, setDataCategory] = useState("");
   const [dataTitle, setDataTitle] = useState("");
@@ -56,13 +57,17 @@ const AddPropertyModal = () => {
       formData.append("country", dataCountry.label);
       formData.append("country_code", dataCountry.value);
       formData.append("image", dataImage);
-      const response = await apiService.post('/api/properties/create/',formData)
+      const response = await apiService.postForm('/api/properties/create/',formData)
       if(response.success){
         console.log('SUCCESS :-D');
         router.push('/')
         addPropertyModal.close();
       }else{
         console.log('Error');
+        const tempErrors: string[] = Object.values(response).map((error:any)=>{
+          return error
+        })
+        setErrors(tempErrors)
       }
       
     }
@@ -195,6 +200,13 @@ const AddPropertyModal = () => {
               </div>
             )}
           </div>
+          {errors.map((error,index)=>{
+            return(
+              <div key={index} className="p-5 mb-4 airbnb text-white rounded-xl opacity-80">
+                {error}
+              </div>
+            )
+          })}
           <CustomButton
             label="Previous"
             className="mb-2 bg-black! hover:bg-gray-800!"

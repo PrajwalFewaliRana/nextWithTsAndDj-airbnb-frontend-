@@ -11,13 +11,13 @@ const AdddPropertyButton: React.FC<AddPropertyButtonProps> = ({ userId }) => {
   const loginModal = useLoginModel();
   const addPropertyModal = useAddPropertyModal();
   const airbnbYourHome = () => {
-    // if (userId) {
-    //   addPropertyModal.open();
-    // }
-    //  else {
-    //   loginModal.open();
-    // }
-    addPropertyModal.open()
+    if (userId) {
+      addPropertyModal.open();
+    }
+     else {
+      loginModal.open();
+    }
+    // addPropertyModal.open()
   };
   return (
     <div
