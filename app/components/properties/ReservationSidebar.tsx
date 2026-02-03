@@ -85,7 +85,6 @@ const ReservationSidebar:React.FC<ReservationSidebarProps> = ({property,userId})
   }
 
   useEffect(()=>{
-    getReservations()
     if(dateRange.startDate && dateRange.endDate){
       const dayCount = differenceInDays(
         dateRange.endDate,
