@@ -9,11 +9,11 @@ import { getUserId } from '@/app/lib/actions'
 const Navbar = async() => {
     const userId = await getUserId()
   return (
-    <nav className='w-full fixed top-0 left-0 py-4 border-b bg-white z-10'>
+    <nav className='w-full mx-auto fixed top-0 left-0 py-4 border-b bg-white z-10'>
         <div className='max-w-375 mx-auto px-6'>
             <div className='flex justify-between items-center'>
                 <Link href="/">
-                    <Image src="/logo.png" alt='DjangoBnb' width={100} height={32} />
+                    <Image src="/logo.png" alt='DjangoBnb' width={200} height={42} />
                 </Link>
 
                 <div className='flex space-x-6'>
